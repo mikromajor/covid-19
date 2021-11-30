@@ -6,7 +6,9 @@ async function getServerInf(url) {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Response status fetch is : ${response.status}`);
+    throw new Error(
+      `Response status fetch is : ${response.status}`
+    );
   } else {
     const arrObjects = await response.json();
     return arrObjects;
@@ -25,9 +27,7 @@ function addCountriesList() {
       });
     })
     .catch((e) => {
-      console.log(
-        "There has been a problem with your fetch 1 operation: " + e.message
-      );
+      console.log("Error: " + e.message);
     });
 }
 
@@ -39,7 +39,9 @@ select.addEventListener("change", () => {
 });
 
 function pullCovidInf(country) {
-  getServerInf("https://api.covid19api.com/country/" + country)
+  getServerInf(
+    "https://api.covid19api.com/country/" + country
+  )
     .then((Covid) => {
       const h2 = document.createElement("h2");
       if (!Covid.length) {
@@ -53,31 +55,29 @@ function pullCovidInf(country) {
         createContent();
       }
     })
-    .catch((error) => console.log("error in 2-nd fetch =>", error));
+    .catch((error) => console.log("error  =>", error));
 }
 
 // C O N T E N T
 function createContent() {
   const content = clearContent("content");
   const h2 = document.createElement("h2");
-  h2.textContent = arrCovidInf[arrCovidInf.length - 1].Country;
+  const lastData = arrCovidInf[arrCovidInf.length - 1];
+  h2.textContent = lastData.Country;
 
   const p0 = document.createElement("p");
-  p0.textContent = `Date - ${arrCovidInf[arrCovidInf.length - 1].Date}`;
+  p0.textContent = `Data for the day: ${lastData.Date.slice(
+    0,
+    10
+  )}`;
 
   const p1 = document.createElement("p");
-  p1.textContent = `Amount of Active - ${
-    arrCovidInf[arrCovidInf.length - 1].Active
-  }`;
+  p1.textContent = `Amount of Active: ${lastData.Active}`;
   const p2 = document.createElement("p");
-  p2.textContent = `Amount Confirmed  - ${
-    arrCovidInf[arrCovidInf.length - 1].Confirmed
-  }`;
+  p2.textContent = `Amount Confirmed: ${lastData.Confirmed}`;
 
   const p3 = document.createElement("p");
-  p3.textContent = `Amount of deaths - ${
-    arrCovidInf[arrCovidInf.length - 1].Deaths
-  }`;
+  p3.textContent = `Amount of deaths: ${lastData.Deaths}`;
 
   content.appendChild(h2);
   content.appendChild(p0);
@@ -91,38 +91,34 @@ function createContent() {
   lastDay.textContent = "Statistics for last day";
   lastDay.addEventListener("click", () => {
     addStatistic(
-      arrCovidInf[arrCovidInf.length - 1],
       arrCovidInf[arrCovidInf.length - 2],
-      "day"
+      arrCovidInf[arrCovidInf.length - 3],
+      "last day"
     );
   });
   const week = document.createElement("button");
   week.textContent = "Statistics for last week";
   week.addEventListener("click", () => {
     addStatistic(
-      arrCovidInf[arrCovidInf.length - 1],
-      arrCovidInf[arrCovidInf.length - 8],
-      "week"
+      arrCovidInf[arrCovidInf.length - 2],
+      arrCovidInf[arrCovidInf.length - 9],
+      "last week"
     );
   });
   const month = document.createElement("button");
   month.textContent = "Statistics for last month";
   month.addEventListener("click", () => {
     addStatistic(
-      arrCovidInf[arrCovidInf.length - 1],
-      arrCovidInf[arrCovidInf.length - 31],
-      "month"
+      arrCovidInf[arrCovidInf.length - 2],
+      arrCovidInf[arrCovidInf.length - 32],
+      "last month"
     );
   });
   const menuInput = document.createElement("button");
   menuInput.textContent = "Input menu";
   menuInput.addEventListener("click", () => {
     const menuInput = document.getElementById("menuInput");
-    if (menuInput.children.length > 1) {
-      menuInput.classList.remove("hidden");
-    } else {
-      createInputMenu();
-    }
+    createInputMenu();
   });
   const anchorForMenu = document.createElement("a");
   anchorForMenu.href = "#menuInput";
@@ -136,9 +132,7 @@ function createContent() {
 
 function clearContent(id) {
   const elemDOM = document.getElementById(id);
-  if (elemDOM.length <= 1) {
-    return elemDOM;
-  } else {
+  if (elemDOM) {
     while (elemDOM.firstChild) {
       elemDOM.removeChild(elemDOM.firstChild);
     }
@@ -148,7 +142,7 @@ function clearContent(id) {
 
 //  I n p u t
 function createInputMenu() {
-  const menuInput = document.getElementById("menuInput");
+  const menuInput = clearContent("menuInput");
   menuInput.classList.remove("hidden");
 
   const warning = document.createElement("h4");
@@ -156,7 +150,7 @@ function createInputMenu() {
   warning.classList.add("hidden");
 
   const headerMenu = document.createElement("h4");
-  headerMenu.textContent = `Choose the period what you need max ${arrCovidInf.length} days ago`;
+  headerMenu.textContent = `Choose the period min - ${arrCovidInf.length} days ago max - yesterday`;
 
   const labelFirstDate = document.createElement("label");
   labelFirstDate.name = "inputFirstDate";
@@ -165,7 +159,6 @@ function createInputMenu() {
   const inputFirstDate = document.createElement("input");
   inputFirstDate.id = "inputFirstDate";
   inputFirstDate.type = "Date";
-  inputFirstDate.value = "2020 6 17";
 
   const labelSecondDate = document.createElement("label");
   labelSecondDate.name = "inputLastDate";
@@ -174,12 +167,14 @@ function createInputMenu() {
   const inputLastDate = document.createElement("input");
   inputLastDate.id = "inputLastDate";
   inputLastDate.type = "Date";
-  inputLastDate.value = "2021 6 17";
 
   const buttonEnter = document.createElement("button");
   buttonEnter.textContent = "ENTER";
   buttonEnter.addEventListener("click", () => {
-    calculationPeriod(inputFirstDate.value, inputLastDate.value);
+    calculationPeriod(
+      inputFirstDate.value,
+      inputLastDate.value
+    );
   });
   const anchorForStatistic = document.createElement("a");
   anchorForStatistic.href = "#statistic";
@@ -201,38 +196,33 @@ function createInputMenu() {
   menuInput.classList.add("content");
 }
 
-//      calculation Period
 function calculationPeriod(first, last) {
   const warning = document.getElementById("warning");
   const dateToday = new Date();
   const dateFirst = new Date(first);
   const dateLast = new Date(last);
-  const todayMinusFirstDate = Math.trunc((dateToday - dateFirst) / 86400000);
-  const todayMinusLastDate = Math.trunc((dateToday - dateLast) / 86400000);
-  console.log("todayMinusFirstDate < 0 ", todayMinusFirstDate);
+  const startPeriod = Math.trunc(
+    (dateToday - dateFirst) / 86400000
+  );
+  const endPeriod = Math.trunc(
+    (dateToday - dateLast) / 86400000
+  );
 
   if (
-    todayMinusFirstDate > arrCovidInf.length ||
-    todayMinusLastDate > arrCovidInf.length ||
-    todayMinusFirstDate < 1 ||
-    todayMinusLastDate < 1
+    startPeriod > arrCovidInf.length ||
+    endPeriod > arrCovidInf.length ||
+    startPeriod < 1 ||
+    endPeriod < 1
   ) {
     warning.textContent = `No information available for this period`;
     warning.classList.remove("hidden");
-  } else if (dateFirst - dateLast) {
+  } else {
     warning.classList.add("hidden");
     addStatistic(
-      arrCovidInf[
-        arrCovidInf.length - 1 - todayMinusFirstDate
-      ],
-      arrCovidInf[
-        arrCovidInf.length - 1 - todayMinusLastDate
-      ],
-      Math.abs(todayMinusFirstDate - todayMinusLastDate) + " days"
+      arrCovidInf[arrCovidInf.length - 1 - startPeriod],
+      arrCovidInf[arrCovidInf.length - 1 - endPeriod],
+      Math.abs(startPeriod - endPeriod) + " days"
     );
-  } else {
-    warning.textContent = "Error, check yours input date";
-    warning.classList.remove("hidden");
   }
 }
 
@@ -242,20 +232,24 @@ function addStatistic(today, dayAgo, time) {
 
   const deaths = document.createElement("p");
   deaths.textContent =
-    "People DEATHS: " + Math.abs(today.Deaths - dayAgo.Deaths);
+    "People DEATHS: " +
+    Math.abs(today.Deaths - dayAgo.Deaths);
 
   const confirmed = document.createElement("p");
   confirmed.textContent =
-    "People CONFIRMED: " + Math.abs(today.Confirmed - dayAgo.Confirmed);
+    "People CONFIRMED: " +
+    Math.abs(today.Confirmed - dayAgo.Confirmed);
 
   const active = document.createElement("p");
   active.textContent =
-    "People ACTIVE: " + Math.abs(today.Active - dayAgo.Active);
+    "People ACTIVE: " +
+    Math.abs(today.Active - dayAgo.Active);
 
   const Time = document.createElement("h2");
-  Time.textContent = `For last ${time}`;
+  Time.textContent = `For the period: ${time}`;
 
-  const buttonHideStatistic = document.createElement("button");
+  const buttonHideStatistic =
+    document.createElement("button");
   buttonHideStatistic.id = "buttonHideStatistic";
   buttonHideStatistic.textContent = "Hide statistics";
   buttonHideStatistic.addEventListener("click", () => {
@@ -272,7 +266,9 @@ function addStatistic(today, dayAgo, time) {
 }
 
 //    S   T   A   R    T
-document.addEventListener("DOMContentLoaded", () => addCountriesList());
+document.addEventListener("DOMContentLoaded", () =>
+  addCountriesList()
+);
 
 // document.querySelector('#form').addEventListener('submit', (e) => {
 //   e.preventDefault();
