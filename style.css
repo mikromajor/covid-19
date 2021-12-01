@@ -31,7 +31,11 @@ main {
   border-radius: 10px;
   border: 1px solid grey;
   /* box-shadow: 30px 25px 5px rgb(255, 255, 255); */
-  background-image: linear-gradient(0deg, white, rgb(15, 207, 255));
+  background-image: linear-gradient(
+    0deg,
+    white,
+    rgb(15, 207, 255)
+  );
 }
 #inputMenu {
   max-width: 300px;
@@ -53,6 +57,9 @@ button:focus {
 
 .hidden {
   display: none;
+}
+#warning {
+  background-color: yellow;
 }
 h2,
 h3,

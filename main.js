@@ -62,11 +62,11 @@ function pullCovidInf(country) {
 function createContent() {
   const content = clearContent("content");
   const h2 = document.createElement("h2");
-  const lastData = arrCovidInf[arrCovidInf.length - 1];
+  const lastData = arrCovidInf[arrCovidInf.length - 2];
   h2.textContent = lastData.Country;
 
   const p0 = document.createElement("p");
-  p0.textContent = `Data for the day: ${lastData.Date.slice(
+  p0.textContent = `Last statistic day: ${lastData.Date.slice(
     0,
     10
   )}`;
@@ -93,7 +93,7 @@ function createContent() {
     addStatistic(
       arrCovidInf[arrCovidInf.length - 2],
       arrCovidInf[arrCovidInf.length - 3],
-      "last day"
+      "last statistic day"
     );
   });
   const week = document.createElement("button");
@@ -102,7 +102,7 @@ function createContent() {
     addStatistic(
       arrCovidInf[arrCovidInf.length - 2],
       arrCovidInf[arrCovidInf.length - 9],
-      "last week"
+      "last statistic week"
     );
   });
   const month = document.createElement("button");
@@ -111,7 +111,7 @@ function createContent() {
     addStatistic(
       arrCovidInf[arrCovidInf.length - 2],
       arrCovidInf[arrCovidInf.length - 32],
-      "last month"
+      "last statistic month"
     );
   });
   const menuInput = document.createElement("button");
@@ -197,6 +197,7 @@ function createInputMenu() {
 }
 
 function calculationPeriod(first, last) {
+  let statistic;
   const warning = document.getElementById("warning");
   const dateToday = new Date();
   const dateFirst = new Date(first);
@@ -216,6 +217,8 @@ function calculationPeriod(first, last) {
   ) {
     warning.textContent = `No information available for this period`;
     warning.classList.remove("hidden");
+    statistic = clearContent("statistic");
+    statistic.classList.add("hidden");
   } else {
     warning.classList.add("hidden");
     addStatistic(
@@ -229,6 +232,7 @@ function calculationPeriod(first, last) {
 // add Statistic inf
 function addStatistic(today, dayAgo, time) {
   const statistic = clearContent("statistic");
+  statistic.classList.remove("hidden");
 
   const deaths = document.createElement("p");
   deaths.textContent =
@@ -245,8 +249,8 @@ function addStatistic(today, dayAgo, time) {
     "People ACTIVE: " +
     Math.abs(today.Active - dayAgo.Active);
 
-  const Time = document.createElement("h2");
-  Time.textContent = `For the period: ${time}`;
+  const headerToPeriodTime = document.createElement("h2");
+  headerToPeriodTime.textContent = `Period: ${time}`;
 
   const buttonHideStatistic =
     document.createElement("button");
@@ -258,7 +262,7 @@ function addStatistic(today, dayAgo, time) {
   });
   statistic.classList.remove("hidden");
   statistic.classList.add("content");
-  statistic.appendChild(Time);
+  statistic.appendChild(headerToPeriodTime);
   statistic.appendChild(active);
   statistic.appendChild(confirmed);
   statistic.appendChild(deaths);
